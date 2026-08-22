@@ -1,15 +1,36 @@
 name: CI 
 
-on: push
+on: 
+ push:
+ workflow_dispatch:
+
+
+permissions:
+  contents: read
 
 jobs:
+ secret_scanning:
+   name: run gitleaks
+   runs-on: ubuntu-latest
+
+   steps:
+     - name: checkout code
+       uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+     - name: run gitleaks
+      uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+       
  sast_scan:
    name: Run Bandit scan
    runs-on: ubuntu-latest
    
    steps:
      - name: checkout our code
-       uses: actions/checkout@v2
+       uses: actions/checkout@v5
 
      - name: install python
        uses: actions/setup-python@v7.0.0

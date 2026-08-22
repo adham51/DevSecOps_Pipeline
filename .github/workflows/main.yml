@@ -23,7 +23,7 @@ jobs:
        run: bandit -lll -ii -r . -f json -o bandit-report.json # -r scans current directory, -lll ignores medium and low severity
        
      - name: upload artifcacts to save json
-       uses: actions/upload-artifact@v3
+       uses: actions/upload-artifact@v7.0.1
        if: always()
        with: 
         name: bandit-findings

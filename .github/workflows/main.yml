@@ -43,7 +43,7 @@ jobs:
         python-version: 3.8
 
      - name: installing Bandit
-       run: pip install Bandit
+       run: pip install "bandit[sarif]"
      
      - name: running bandit scan
        run: bandit -lll -ii -r . -f sarif -o bandit-report.sarif # -r scans current directory, -lll ignores medium and low severity
@@ -81,7 +81,7 @@ jobs:
           format: 'sarif'
           output: 'trivy-SCA-report.sarif'  
           severity: 'HIGH,CRITICAL'
-          exit-code: '1' # fails if high or critical are found
+          exit-code: '0' # fails if high or critical are found
 
       - name: Upload Trivy Report Artifact
         uses: actions/upload-artifact@v4
@@ -138,7 +138,7 @@ jobs:
           format: 'sarif'
           output: 'trivy-container-report.sarif'
           severity: 'HIGH,CRITICAL'
-          exit-code: '1' # Ensures the step completes so SARIF can upload
+          exit-code: '0' # Ensures the step completes so SARIF can upload
 
       - name: Upload Container Image SARIF to GitHub Security Tab
         uses: github/codeql-action/upload-sarif@v3

@@ -51,4 +51,23 @@ jobs:
        with: 
         name: bandit-findings
         path: bandit-report.json
+
+  SCA_Scan:
+    name: Run Trivy SCA on dependancies
+    runs-on: ubuntu-latest 
+    needs: secret_scanning
+
+    steps:
+      - name: checkout my code
+        uses: actions/checkout@v5
+
+      - name: Run Trivy Vulnerability Scanner 
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: 'fs' # fs for file structure or software composition analysis SCA scan 
+          scan-ref: '.' # Scans current repo
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1' # Fails build if HIGH or CRITICAL CVEs are found in dependencies
+    
    

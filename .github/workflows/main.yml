@@ -7,7 +7,8 @@ on:
 
 permissions:
   contents: read
-
+  security-events: write # allows github actions to upload sarif to github security tab 
+  
 jobs:
  secret_scanning:
    name: run gitleaks
@@ -43,14 +44,21 @@ jobs:
        run: pip install Bandit
      
      - name: running bandit scan
-       run: bandit -lll -ii -r . -f json -o bandit-report.json # -r scans current directory, -lll ignores medium and low severity
+       run: bandit -lll -ii -r . -f sarif -o bandit-report.sarif # -r scans current directory, -lll ignores medium and low severity
        
      - name: upload artifcacts to save json
        uses: actions/upload-artifact@v7.0.1
        if: always()
        with: 
         name: bandit-findings
-        path: bandit-report.json
+        path: bandit-report.sarif
+
+      - name: Upload Bandit SARIF to GitHub Security Tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: bandit-report.sarif
+          category: bandit-sast
         
         
  SCA_Scan:
@@ -70,5 +78,18 @@ jobs:
           format: 'table'
           severity: 'HIGH,CRITICAL'
           exit-code: '1' # Fails build if HIGH or CRITICAL CVEs are found in dependencies
+
+      - name: Upload Trivy Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-SCA-report
+          path: trivy-SCA-report.json
+
+       - name: Upload SARIF to GItjub Actions security tab
+         uses: actions/codeql-action/upload-sarif@v3
+         if: always()
+         with:
+          sarif_file: trivy-SCA-report
+          category: trivy-SCA
     
    

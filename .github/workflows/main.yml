@@ -53,10 +53,10 @@ jobs:
         name: bandit-findings
         path: bandit-report.sarif
 
-      - name: Upload Bandit SARIF to GitHub Security Tab
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
+     - name: Upload Bandit SARIF to GitHub Security Tab
+       uses: github/codeql-action/upload-sarif@v3
+       if: always()
+       with:
           sarif_file: bandit-report.sarif
           category: bandit-sast
         
@@ -85,10 +85,10 @@ jobs:
           name: trivy-SCA-report
           path: trivy-SCA-report.json
 
-       - name: Upload SARIF to GItjub Actions security tab
-         uses: actions/codeql-action/upload-sarif@v3
-         if: always()
-         with:
+      - name: Upload SARIF to GItjub Actions security tab
+        uses: actions/codeql-action/upload-sarif@v3
+        if: always()
+        with:
           sarif_file: trivy-SCA-report
           category: trivy-SCA
     

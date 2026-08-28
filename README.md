@@ -34,21 +34,26 @@ Pipeline Workflow: Uses parallel jobs to run scanners at the same time and save 
 
 ## Security Dashboards & Metrics
 
-### DefectDojo ASPM Dashboard
-DefectDojo acts as the single pane of glass, aggregating findings from all tools, eliminating duplicates, and providing a unified view of the application's security posture.
+### Centralized ASPM Dashboard (DefectDojo)
+DefectDojo pulls findings from all scanners into one place, removes duplicate alerts, and provides a unified view of the app's overall security posture.
 
 ![DefectDojo Security Dashboard](./docs/defectdojo-dashboard.png)
 *Figure 2: Centralized vulnerability metrics across all integrated tools in DefectDojo.*
 
-### SonarCloud Code Quality
-![SonarCloud Code Quality](./docs/sonarcloud-summary.png)
-*Figure 3: SonarCloud providing detailed SAST analysis and technical debt metrics.*
+### Code Quality & SAST Analysis (SonarCloud)
+SonarCloud evaluates overall code quality, technical debt, and provides developer-friendly remediation guidance directly in the source code.
+
+![SonarCloud Code Quality Summary](./docs/sonarcloud-summary.png)
+*Figure 3: SonarCloud overall quality gate and maintainability metrics.*
+
+![SonarCloud Detailed Remediation](./docs/sonarcloud-remediation.png)
+*Figure 4: Developer-friendly SAST breakdown highlighting execution flow (Source to Sink) and remediation guidance.*
 
 ### GitHub Security Code Scanning
-Findings from Trivy and Bandit are also natively integrated into the GitHub Security tab for developer visibility.
+SARIF outputs from Trivy and Bandit integrate directly into GitHub's native security tab.
 
 ![GitHub Security Tab](./docs/github-security-tab.png)
-*Figure 4: SARIF reports integrated directly into GitHub's Code Scanning alerts.*
+*Figure 5: Native SARIF reports integrated into GitHub Code Scanning alerts.*
 
 ## Troubleshooting & Technical Challenges
 

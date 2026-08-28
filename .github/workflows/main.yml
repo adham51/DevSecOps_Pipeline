@@ -43,6 +43,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=adham51
+            -Dsonar.projectKey=adham51_DevSecOps_Pipeline
 
  # 2) SAST scanning using Bandit
       

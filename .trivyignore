@@ -1,0 +1,9 @@
+# False positive: not reachable in our code path
+CVE-2020-1747
+
+# No fix available yet — accepted risk
+CVE-2023-43804
+CVE-2018-25032
+
+# Build-only dependency, not shipped to runtime
+CVE-2022-40898

@@ -50,12 +50,23 @@ Findings from Trivy and Bandit are also natively integrated into the GitHub Secu
 ![GitHub Security Tab](./docs/github-security-tab.png)
 *Figure 4: SARIF reports integrated directly into GitHub's Code Scanning alerts.*
 
-## Usage
+## Troubleshooting & Technical Challenges
 
-To replicate or explore this pipeline:
+**1. Artifact sharing across runners**
+- **Problem:** Scan jobs ran on separate VMs, so the reporting job (`defectdojo_import`) couldn't access reports from other jobs.
+- **Solution:** Used `upload-artifact@v4` in scan jobs and `download-artifact@v4` in the reporting job to collect everything into a shared `./reports` folder.
 
-1.  Review the `.github/workflows/main.yml` file for the complete pipeline configuration.
-2.  Ensure necessary secrets (`SONAR_TOKEN`, `DEFECTDOJO_API_KEY`) are configured in your repository settings if adapting for your own use.
+**2. Pipeline stopping on failed scans**
+- **Problem:** Bandit and ZAP exit with an error code on high-severity findings, which stopped the pipeline before reporting could run.
+- **Solution:** Added `if: always()` to the `defectdojo_import` job so it still runs and uploads findings even if a scan step fails.
+
+**3. False positives from scanners**
+- **Problem:** Bandit and Trivy flagged test files and vendor/third-party code as vulnerabilities, adding noise.
+- **Solution:** Used a `.trivyignore` file to skip known false positives and non-actionable CVEs.
+
+**4. DAST target not ready**
+- **Problem:** ZAP scans failed intermittently with connection timeouts since the PyGoat container was still booting/migrating.
+- **Solution:** Added a pre-scan health-check (`docker ps`, `docker logs`, 15s wait) to confirm the container was healthy before scanning.
 
 ---
-*Developed by Adham Abo El-Magd | [LinkedIn Profile]*
+*Developed by Adham Abo El-Magd | [[LinkedIn Profile](https://www.linkedin.com/in/adham-hossam-abol-magd/)]*

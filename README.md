@@ -1,128 +1,66 @@
-# PyGoat
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+# Automated DevSecOps Pipeline (ASPM)
 
-intentionally vuln web Application Security in django.
-our roadmap build intentionally vuln web Application in django. The Vulnerability can based on OWASP top ten
-<br>
+This project implements an automated DevSecOps pipeline using GitHub Actions to scan PyGoat, an intentionally vulnerable Django web application. The CI workflow integrates secret scanning, SAST, SCA, container analysis, and DAST to uncover vulnerabilities across all application layers. All scan results are then centralized into DefectDojo, providing a unified Application Security Posture Management (ASPM) dashboard.
 
-Table of Contentss
-=================
+## Key Features & Objectives
 
-* [pygoat](#pygoat)
-   * [Installation](#installation)
-      * [From Sources](#from-sources)
-      * [Docker Container](#docker-container)
-      * [Installation Video](#installation-video)
-   * [Uninstallation](#uninstallation)
-   * [Solutions](/Solutions/solution.md)
-   * [For Developers](/docs/dev_guide.md)
+*   **Shift-Left Security:** Integrates security checks early in the SDLC, reducing risk and avoiding costly late-stage remediation.
+*   **Comprehensive Coverage:** Utilizes multiple tools of specialized open-source security tools for diverse scanning (Secrets, SAST, SCA, Container, DAST).
+*   **Centralized Vulnerability Management:** Uses DefectDojo to merge, deduplicate, and track all tool findings in one place.
+*   **Automated Workflow:** Fully automated CI pipeline triggered on code pushes, ensuring consistent security evaluation.
 
-## Installation
+## Architecture & Tools
 
-### From Sources
+The pipeline is orchestrated via GitHub Actions and employs the following security tools in parallel and sequential stages:
 
-To setup the project on your local machine:
-<br>
+1.  **Secret Scanning:** `Gitleaks` (Detects hardcoded secrets, passwords, and API keys).
+2.  **Code Quality & SAST (Static Application Security Testing):**
+    *   `SonarQube Cloud` (Analyzes code for bugs, vulnerabilities, code smells, and provides fixes).
+    *   `Bandit` (Identifies common security issues in Python code).
+3.  **SCA (Software Composition Analysis):** `Trivy` (Scans project dependencies for known vulnerabilities and generates an SBOM).
+4.  **Container Security:** `Trivy` (Scans the built Docker image for OS and library vulnerabilities).
+5.  **DAST (Dynamic Application Security Testing):** `OWASP ZAP Baseline` (Actively scans the running web application for vulnerabilities like XSS and SQLi).
+6.  **ASPM (Application Security Posture Management):** `DefectDojo` (Central dashboard for importing, managing, and tracking all scan results).
 
-First, Clone the repository using GitHub website or git in Terminal
-```
-  git clone https://github.com/adeyosemanputra/pygoat.git
-  ### To Download a specific branch
-  git clone -b <branch_name> https://github.com/adeyosemanputra/pygoat.git
-```
+## Pipeline Workflow
 
-#### Method 1
+*(Add a screenshot of your successful GitHub Actions workflow run here)*
+![GitHub Actions Pipeline Run](./docs/images/pipeline-run.png)
+*Figure 1: GitHub Actions executing parallel and sequential security jobs.*
 
-1. Install all app and python requirements using installer file - `bash installer.sh`
-2. Apply the migrations `python3 manage.py migrate`.<br>
-3. Finally, run the development server `python3 manage.py runserver`.<br>
-4. The project will be available at <http://127.0.0.1:8000> 
+Pipeline Workflow: Uses parallel jobs to run scanners at the same time and save execution time:
 
-#### Method 2
+*   **Phase 1: Secret Scanning:** Runs first to ensure no sensitive data is leaked before further processing.
+*   **Phase 2: Parallel Analysis (SAST, SCA, DAST):** If no secrets are found, SonarCloud, Bandit, Trivy (Dependency & Container), and OWASP ZAP run concurrently.
+*   **Phase 3: Centralized Reporting:** Upon completion of all scans, the `defectdojo_import` job aggregates the SARIF and HTML reports and pushes them to the DefectDojo API.
 
-1. Install python3 requirements `pip install -r requirements.txt`.<br> 
-2. Apply the migrations `python3 manage.py migrate`.<br>
-3. Finally, run the development server `python3 manage.py runserver`.<br>
-4. The project will be available at <http://127.0.0.1:8000> 
+## Security Dashboards & Metrics
 
-#### Method 3
+### DefectDojo ASPM Dashboard
+DefectDojo acts as the single pane of glass, aggregating findings from all tools, eliminating duplicates, and providing a unified view of the application's security posture.
 
-1. Install all app and python requirements using `setup.py` file - `pip3 install .`
-2. Apply the migrations `python3 manage.py migrate`.<br>
-3. Finally, run the development server `python3 manage.py runserver`.<br>
-4. The project will be available at <http://127.0.0.1:8000> 
+*(Add your best DefectDojo Overview/Metrics screenshot here - e.g., the one showing 5448 findings)*
+![DefectDojo Security Dashboard](./docs/images/defectdojo-dashboard.png)
+*Figure 2: Centralized vulnerability metrics across all integrated tools in DefectDojo.*
 
-### Docker Container
-1. Install [Docker](https://www.docker.com)
-2. Run `docker pull pygoat/pygoat` or `docker pull pygoat/pygoat:latest`
-3. Run `docker run --rm -p 8000:8000 pygoat/pygoat:latest`
-4. Browse to <http://127.0.0.1:8000> 
-5. Remove existing image using `docker image rm pygoat/pygoat` and pull again incase of any error
+### SonarCloud Code Quality
+*(Add your SonarCloud Summary screenshot here)*
+![SonarCloud Code Quality](./docs/images/sonarcloud-summary.png)
+*Figure 3: SonarCloud providing detailed SAST analysis and technical debt metrics.*
 
-### From Docker-Compose 
-1. Install [Docker](https://www.docker.com)
-2. Run `docker-compose up` or `docker-compose up -d`
+### GitHub Security Code Scanning
+Findings from Trivy and Bandit are also natively integrated into the GitHub Security tab for developer visibility.
 
-### Build Docker Image and Run
-1. Clone the repository  &ensp; `git clone https://github.com/adeyosemanputra/pygoat.git` 
-2. Build the docker image from Dockerfile using &ensp; `docker build -f Dockerfile -t pygoat .`
-3. Run the docker image &ensp;`docker run --rm -p 8000:8000 pygoat:latest`
-4. Browse to <http://127.0.0.1:8000> or <http://0.0.0.0:8000> 
+*(Add your GitHub Security Code Scanning screenshot here)*
+![GitHub Security Tab](./docs/images/github-security-tab.png)
+*Figure 4: SARIF reports integrated directly into GitHub's Code Scanning alerts.*
 
-### Installation video 
+## Usage
 
-1. From Source using `installer.sh`
- - [Installing PyGoat from Source](https://www.youtube.com/watch?v=7bYBJXG3FRQ)
-2. Without using `installer.sh`
- - [![](http://img.youtube.com/vi/rfzQiMeiwso/0.jpg)](http://www.youtube.com/watch?v=rfzQiMeiwso "Installation Pygoat")
+To replicate or explore this pipeline:
 
-## Uninstallation
+1.  Review the `.github/workflows/main.yml` file for the complete pipeline configuration.
+2.  Ensure necessary secrets (`SONAR_TOKEN`, `DEFECTDOJO_API_KEY`) are configured in your repository settings if adapting for your own use.
 
-### On Debian/Ubuntu Based Systems
-- On Debian/Ubuntu based systems, you can use the `uninstaller.sh` script to uninstall `pygoat` along with all it's dependencies.
-- To uninstall `pygoat`, simply run:
-```bash
-$ bash ./uninstaller.sh
-```
-
-### On Other Systems
-- On other systems, you can use the `uninstaller.py` script to uninstall `pygoat` along with all it's dependencies
-- To uninstall `pygoat`, simply run:
-```bash
-$ python3 uninstaller.py
-```
-
-## Solutions 
-<a href="/Solutions/solution.md">Solutions to all challenges</a>
-
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/pwned-17"><img src="https://avatars.githubusercontent.com/u/61360833?v=4?s=100" width="100px;" alt=""/><br /><sub><b>pwned-17</b></sub></a><br /><a href="https://github.com/adeyosemanputra/pygoat/commits?author=pwned-17" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/prince-7"><img src="https://avatars.githubusercontent.com/u/53997924?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aman Singh</b></sub></a><br /><a href="https://github.com/adeyosemanputra/pygoat/commits?author=prince-7" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/adeyosemanputra"><img src="https://avatars.githubusercontent.com/u/24958168?v=4?s=100" width="100px;" alt=""/><br /><sub><b>adeyosemanputra</b></sub></a><br /><a href="https://github.com/adeyosemanputra/pygoat/commits?author=adeyosemanputra" title="Code">💻</a> <a href="https://github.com/adeyosemanputra/pygoat/commits?author=adeyosemanputra" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/gaurav618618"><img src="https://avatars.githubusercontent.com/u/29380890?v=4?s=100" width="100px;" alt=""/><br /><sub><b>gaurav618618</b></sub></a><br /><a href="https://github.com/adeyosemanputra/pygoat/commits?author=gaurav618618" title="Code">💻</a> <a href="https://github.com/adeyosemanputra/pygoat/commits?author=gaurav618618" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/kUSHAL0601"><img src="https://avatars.githubusercontent.com/u/29600964?v=4?s=100" width="100px;" alt=""/><br /><sub><b>MajAK</b></sub></a><br /><a href="https://github.com/adeyosemanputra/pygoat/commits?author=kUSHAL0601" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/JustinDPerkins"><img src="https://avatars.githubusercontent.com/u/60413733?v=4?s=100" width="100px;" alt=""/><br /><sub><b>JustinPerkins</b></sub></a><br /><a href="https://github.com/adeyosemanputra/pygoat/commits?author=JustinDPerkins" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/Hkakashi"><img src="https://avatars.githubusercontent.com/u/43193113?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Liu Peng</b></sub></a><br /><a href="https://github.com/adeyosemanputra/pygoat/commits?author=Hkakashi" title="Code">💻</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://github.com/RupakBiswas-2304"><img src="https://avatars.githubusercontent.com/u/75058161?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Metaphor</b></sub></a><br /><a href="https://github.com/adeyosemanputra/pygoat/commits?author=RupakBiswas-2304" title="Code">💻</a></td>
-    <td align="center"><a href="https://whokilleddb.github.io"><img src="https://avatars.githubusercontent.com/u/56482137?v=4?s=100" width="100px;" alt=""/><br /><sub><b>whokilleddb</b></sub></a><br /><a href="https://github.com/adeyosemanputra/pygoat/commits?author=whokilleddb" title="Code">💻</a></td>
-  </tr>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+---
+*Developed by Adham Abo El-Magd | [LinkedIn Profile]*

@@ -225,7 +225,7 @@ jobs:
 
 
   # 5) Import All Security Reports into DefectDojo (ASPM)
-  defectdojo_import:
+ defectdojo_import:
     name: Import Reports to DefectDojo
     runs-on: ubuntu-latest
     needs: [sast_scan, SCA_Scan, container-security, dast_scan]

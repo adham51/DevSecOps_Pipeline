@@ -222,3 +222,76 @@ jobs:
         with:
           name: zap-baseline-report
           path: report_html.html
+
+
+  # 5) Import All Security Reports into DefectDojo (ASPM)
+  defectdojo_import:
+    name: Import Reports to DefectDojo
+    runs-on: ubuntu-latest
+    needs: [sast_scan, SCA_Scan, container-security, dast_scan]
+    if: always()
+
+    steps:
+      - name: Download Bandit Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: bandit-findings
+          path: ./reports
+
+      - name: Download Trivy SCA Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-SCA-report
+          path: ./reports
+
+      - name: Download Trivy Container Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-container-report
+          path: ./reports
+
+      - name: Download ZAP Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zap-baseline-report
+          path: ./reports
+
+      - name: Upload Bandit (SAST) to DefectDojo
+        continue-on-error: true
+        run: |
+          curl -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
+            -H "Authorization: Token ${{ secrets.DEFECTDOJO_API_KEY }}" \
+            -F "scan_type=Bandit Scan" \
+            -F "engagement=28" \
+            -F "file=@reports/bandit-report.sarif" \
+            -F "close_old_findings=true"
+
+      - name: Upload Trivy SCA to DefectDojo
+        continue-on-error: true
+        run: |
+          curl -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
+            -H "Authorization: Token ${{ secrets.DEFECTDOJO_API_KEY }}" \
+            -F "scan_type=Trivy Scan" \
+            -F "engagement=28" \
+            -F "file=@reports/trivy-SCA-report.sarif" \
+            -F "close_old_findings=true"
+
+      - name: Upload Trivy Container to DefectDojo
+        continue-on-error: true
+        run: |
+          curl -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
+            -H "Authorization: Token ${{ secrets.DEFECTDOJO_API_KEY }}" \
+            -F "scan_type=Trivy Scan" \
+            -F "engagement=28" \
+            -F "file=@reports/trivy-container-report.sarif" \
+            -F "close_old_findings=true"
+
+      - name: Upload OWASP ZAP (DAST) HTML Report to DefectDojo
+        continue-on-error: true
+        run: |
+          curl -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
+            -H "Authorization: Token ${{ secrets.DEFECTDOJO_API_KEY }}" \
+            -F "scan_type=ZAP Scan" \
+            -F "engagement=28" \
+            -F "file=@reports/report_html.html" \
+            -F "close_old_findings=true"

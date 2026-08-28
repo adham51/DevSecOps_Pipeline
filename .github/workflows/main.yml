@@ -259,39 +259,29 @@ jobs:
       - name: Upload Bandit (SAST) to DefectDojo
         continue-on-error: true
         run: |
-          curl -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
+          curl --connect-timeout 15 -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
             -H "Authorization: Token ${{ secrets.DEFECTDOJO_API_KEY }}" \
-            -F "scan_type=Bandit Scan" \
+            -F "scan_type=SARIF" \
             -F "engagement=28" \
             -F "file=@reports/bandit-report.sarif" \
-            -F "close_old_findings=true"
+            -F "close_old_findings=true" || echo "Upload failed"
 
       - name: Upload Trivy SCA to DefectDojo
         continue-on-error: true
         run: |
-          curl -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
+          curl --connect-timeout 15 -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
             -H "Authorization: Token ${{ secrets.DEFECTDOJO_API_KEY }}" \
-            -F "scan_type=Trivy Scan" \
+            -F "scan_type=SARIF" \
             -F "engagement=28" \
             -F "file=@reports/trivy-SCA-report.sarif" \
-            -F "close_old_findings=true"
+            -F "close_old_findings=true" || echo "Upload failed"
 
       - name: Upload Trivy Container to DefectDojo
         continue-on-error: true
         run: |
-          curl -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
+          curl --connect-timeout 15 -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
             -H "Authorization: Token ${{ secrets.DEFECTDOJO_API_KEY }}" \
-            -F "scan_type=Trivy Scan" \
+            -F "scan_type=SARIF" \
             -F "engagement=28" \
             -F "file=@reports/trivy-container-report.sarif" \
-            -F "close_old_findings=true"
-
-      - name: Upload OWASP ZAP (DAST) HTML Report to DefectDojo
-        continue-on-error: true
-        run: |
-          curl -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
-            -H "Authorization: Token ${{ secrets.DEFECTDOJO_API_KEY }}" \
-            -F "scan_type=ZAP Scan" \
-            -F "engagement=28" \
-            -F "file=@reports/report_html.html" \
-            -F "close_old_findings=true"
+            -F "close_old_findings=true" || echo "Upload failed"

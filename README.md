@@ -41,7 +41,7 @@ DefectDojo acts as the single pane of glass, aggregating findings from all tools
 *Figure 2: Centralized vulnerability metrics across all integrated tools in DefectDojo.*
 
 ### SonarCloud Code Quality
-![SonarCloud Code Quality](./docs/images/sonarcloud-summary.png)
+![SonarCloud Code Quality](./docs/sonarcloud-summary.png)
 *Figure 3: SonarCloud providing detailed SAST analysis and technical debt metrics.*
 
 ### GitHub Security Code Scanning

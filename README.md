@@ -24,10 +24,8 @@ The pipeline is orchestrated via GitHub Actions and employs the following securi
 
 ## Pipeline Workflow
 
-*(Add a screenshot of your successful GitHub Actions workflow run here)*
-![GitHub Actions Pipeline Run](./docs/images/pipeline-run.png)
-*Figure 1: GitHub Actions executing parallel and sequential security jobs.*
-
+![GitHub Actions Pipeline Run](./docs/pipeline-run.png)
+*Figure 1: GitHub Actions executing security scanners. Note: Bandit and OWASP ZAP intentional failures act as Security Quality Gates blocking vulnerable code from progression while still completing ASPM reporting.*
 Pipeline Workflow: Uses parallel jobs to run scanners at the same time and save execution time:
 
 *   **Phase 1: Secret Scanning:** Runs first to ensure no sensitive data is leaked before further processing.
@@ -39,20 +37,17 @@ Pipeline Workflow: Uses parallel jobs to run scanners at the same time and save 
 ### DefectDojo ASPM Dashboard
 DefectDojo acts as the single pane of glass, aggregating findings from all tools, eliminating duplicates, and providing a unified view of the application's security posture.
 
-*(Add your best DefectDojo Overview/Metrics screenshot here - e.g., the one showing 5448 findings)*
-![DefectDojo Security Dashboard](./docs/images/defectdojo-dashboard.png)
+![DefectDojo Security Dashboard](./docs/defectdojo-dashboard.png)
 *Figure 2: Centralized vulnerability metrics across all integrated tools in DefectDojo.*
 
 ### SonarCloud Code Quality
-*(Add your SonarCloud Summary screenshot here)*
 ![SonarCloud Code Quality](./docs/images/sonarcloud-summary.png)
 *Figure 3: SonarCloud providing detailed SAST analysis and technical debt metrics.*
 
 ### GitHub Security Code Scanning
 Findings from Trivy and Bandit are also natively integrated into the GitHub Security tab for developer visibility.
 
-*(Add your GitHub Security Code Scanning screenshot here)*
-![GitHub Security Tab](./docs/images/github-security-tab.png)
+![GitHub Security Tab](./docs/github-security-tab.png)
 *Figure 4: SARIF reports integrated directly into GitHub's Code Scanning alerts.*
 
 ## Usage
